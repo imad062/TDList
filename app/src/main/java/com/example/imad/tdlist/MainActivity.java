@@ -104,19 +104,28 @@ public class MainActivity extends AppCompatActivity {
                         database.insertData(editTextTask.getText().toString());
                         updateView(database.getAllData());
 
-                        Toast.makeText(getApplicationContext(), "ADDED", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "ADDED", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getApplicationContext(), "CANCELLED", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "CANCELLED", Toast.LENGTH_SHORT).show();
                     }
                 });
 
 
         alertDialog = alert.create();
         alertDialog.show();
+    }
+
+    public void doneClicked(View view)
+    {
+        View parent = (View) view.getParent();
+        TextView textTask = (TextView) parent.findViewById(R.id.txt_task);
+        String task = textTask.getText().toString();
+        database.deleteData(task);
+        updateView(database.getAllData());
     }
 
     public void updateView(Cursor data)
@@ -129,13 +138,11 @@ public class MainActivity extends AppCompatActivity {
 
         if(arrayAdapter == null)
         {
-            Toast.makeText(MainActivity.this, "THis Happened", Toast.LENGTH_LONG).show();
             arrayAdapter = new ArrayAdapter<String>(this, R.layout.item_todo,R.id.txt_task,arrayList);
             listView.setAdapter(arrayAdapter);
         }
         else
         {
-            Toast.makeText(MainActivity.this, "THAT happe", Toast.LENGTH_LONG).show();
             arrayAdapter.clear();
             arrayAdapter.addAll();
             arrayAdapter.notifyDataSetChanged();

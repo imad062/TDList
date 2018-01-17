@@ -30,6 +30,7 @@
         android:layout_alignParentEnd="true"
         android:textAllCaps="false"
         android:text="Done"
-        android:id="@+id/btn_done" />
+        android:id="@+id/btn_done"
+        android:onClick="doneClicked"/>
 
 </RelativeLayout>
