@@ -1,6 +1,7 @@
 package com.example.imad.tdlist;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,6 +14,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.logging.Handler;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
     TextView txtDate_act_main;
     ListView listView;
     ArrayAdapter<String> arrayAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         txtDate_act_main.setText(currentDate().toString());
 
-
+        updateView(database.getAllData());
 
     }
 
@@ -79,7 +81,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void addClicked(View view)
     {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final AlertDialog alertDialog;
+
+
 
         TextView title = new TextView(this);
         title.setText("Add Task");
@@ -88,13 +93,17 @@ public class MainActivity extends AppCompatActivity {
         title.setTextSize(20);
         title.setTypeface(null, Typeface.BOLD);
 
-        final EditText editTextTask = (EditText) findViewById(R.id.edittext_task);
-
         alert.setCustomTitle(title)
+                .setView(R.layout.alert_edittext)
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+
+                        Dialog dialog1 = (Dialog) dialog;
+                        EditText editTextTask = (EditText) dialog1.findViewById(R.id.edittext_task);
                         database.insertData(editTextTask.getText().toString());
+                        updateView(database.getAllData());
+
                         Toast.makeText(getApplicationContext(), "ADDED", Toast.LENGTH_LONG).show();
                     }
                 })
@@ -103,16 +112,40 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         Toast.makeText(getApplicationContext(), "CANCELLED", Toast.LENGTH_LONG).show();
                     }
-                })
-                .setView(R.layout.alert_edittext);
+                });
 
-        AlertDialog alertDialog = alert.create();
+
+        alertDialog = alert.create();
         alertDialog.show();
     }
 
     public void updateView(Cursor data)
     {
         ArrayList<String> arrayList = new ArrayList<>();
+        while (data.moveToNext())
+        {
+            arrayList.add(data.getString(1));
+        }
+
+        if(arrayAdapter == null)
+        {
+            Toast.makeText(MainActivity.this, "THis Happened", Toast.LENGTH_LONG).show();
+            arrayAdapter = new ArrayAdapter<String>(this, R.layout.item_todo,R.id.txt_task,arrayList);
+            listView.setAdapter(arrayAdapter);
+        }
+        else
+        {
+            Toast.makeText(MainActivity.this, "THAT happe", Toast.LENGTH_LONG).show();
+            arrayAdapter.clear();
+            arrayAdapter.addAll();
+            arrayAdapter.notifyDataSetChanged();
+            arrayAdapter = new ArrayAdapter<String>(this, R.layout.item_todo,R.id.txt_task,arrayList);
+            listView.setAdapter(arrayAdapter);
+
+        }
+
+        data.close();
+        database.close();
 
     }
 }
