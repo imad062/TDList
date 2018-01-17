@@ -3,6 +3,7 @@ package com.example.imad.tdlist;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Typeface;
 import android.provider.CalendarContract;
 import android.support.v7.app.AppCompatActivity;
@@ -11,23 +12,34 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+    private DatabaseHelper database;
+
     TextView txtDate_act_main;
+    ListView listView;
+    ArrayAdapter<String> arrayAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        database = new DatabaseHelper(this);
         txtDate_act_main = (TextView) findViewById(R.id.date);
+        listView = (ListView) findViewById(R.id.list);
 
         txtDate_act_main.setText(currentDate().toString());
 
@@ -76,10 +88,13 @@ public class MainActivity extends AppCompatActivity {
         title.setTextSize(20);
         title.setTypeface(null, Typeface.BOLD);
 
+        final EditText editTextTask = (EditText) findViewById(R.id.edittext_task);
+
         alert.setCustomTitle(title)
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        database.insertData(editTextTask.getText().toString());
                         Toast.makeText(getApplicationContext(), "ADDED", Toast.LENGTH_LONG).show();
                     }
                 })
@@ -93,5 +108,11 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog alertDialog = alert.create();
         alertDialog.show();
+    }
+
+    public void updateView(Cursor data)
+    {
+        ArrayList<String> arrayList = new ArrayList<>();
+
     }
 }
